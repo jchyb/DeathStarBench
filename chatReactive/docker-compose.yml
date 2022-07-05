@@ -1,0 +1,35 @@
+version: '3'
+services:
+  seed:
+    image: suu_project_repository/microservice_1:latest
+    ports:
+      - '1600:1600'
+      - 8080:8080
+    environment:
+      CLUSTER_PORT: 1600
+      CLUSTER_IP: seed
+      SEED_PORT_1600_TCP_ADDR: seed
+      JAEGER_HOST: jaeger
+
+  c1:
+    image: suu_project_repository/microservice_2:latest
+    ports:
+      - '1601:1601'
+    environment:
+      CLUSTER_PORT: 1601
+      CLUSTER_IP: c1
+      SEED_PORT_1600_TCP_ADDR: seed
+      JAEGER_HOST: jaeger
+
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one:latest
+    hostname: jaeger
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      # - 14268:14268 do not set
+      - 9411:9411
+      - 55681:55681
