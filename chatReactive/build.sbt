@@ -30,17 +30,13 @@ lazy val commonDependencies = Seq (
   "io.kamon" %% "kamon-jaeger" % "2.5.4"
 )
 
-lazy val microservice_1 = project
-  .in(file("microservice_1"))
+lazy val gateway = project
+  .in(file("module-gateway"))
   .enablePlugins(JavaAppPackaging)
   .settings(
     commonScalacSettings,
-    name := "microservice_1",
+    name := "gateway",
     libraryDependencies ++= commonDependencies,
-
-    // source & cool example: https://github.com/IvannKurchenko/blog-telemetry
-//    javaAgents += "io.opentelemetry.javaagent" % "opentelemetry-javaagent" % "1.11.0",
-    javaOptions += "-Dotel.javaagent.debug=true",
 
     version in Docker := "latest",
     dockerExposedPorts in Docker := Seq(1600),
@@ -50,24 +46,15 @@ lazy val microservice_1 = project
     // run as root 
     daemonUserUid in Docker := Option("0"),
     daemonUser in Docker    := "daemon",
-
-    // dockerCommands ++= Seq(
-    //     Cmd("RUN", "wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"),
-    //     Cmd("ENV", "JAVA_OPTS=\"-javaagent:/opt/docker/opentelemetry-javaagent.jar\"")
-    // )
   )
 
-lazy val microservice_2 = project
-  .in(file("microservice_2"))
+lazy val messageregistry = project
+  .in(file("module-messageregistry"))
   .enablePlugins(JavaAppPackaging)
   .settings(
     commonScalacSettings,
-    name := "microservice_2",
+    name := "messageregistry",
     libraryDependencies ++= commonDependencies,
-
-    // source & cool example: https://github.com/IvannKurchenko/blog-telemetry
-//    javaAgents += "io.opentelemetry.javaagent" % "opentelemetry-javaagent" % "1.11.0",
-    javaOptions += "-Dotel.javaagent.debug=true",
 
     version in Docker := "latest",
     dockerExposedPorts in Docker := Seq(1601),
@@ -77,10 +64,40 @@ lazy val microservice_2 = project
     // run as root 
     daemonUserUid in Docker := Option("0"),
     daemonUser in Docker    := "daemon",
+  )
 
-    // dockerCommands ++= Seq(
-    //     Cmd("RUN", "wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar"),
-    //     Cmd("ENV", "JAVA_OPTS=\"-javaagent:/opt/docker/opentelemetry-javaagent.jar -Dotel.javaagent.debug=true\""),
-    //     // Cmd("ENV", "otel.javaagent.debug=true")
-    // )
+lazy val messageroom = project
+  .in(file("module-messageroom"))
+  .enablePlugins(JavaAppPackaging)
+  .settings(
+    commonScalacSettings,
+    name := "messageroom",
+    libraryDependencies ++= commonDependencies,
+
+    version in Docker := "latest",
+    dockerExposedPorts in Docker := Seq(1602),
+    dockerRepository := Some("suu_project_repository"),
+    dockerBaseImage := "java",
+
+    // run as root 
+    daemonUserUid in Docker := Option("0"),
+    daemonUser in Docker    := "daemon",
+  )
+
+lazy val userservice = project
+  .in(file("module-userservice"))
+  .enablePlugins(JavaAppPackaging)
+  .settings(
+    commonScalacSettings,
+    name := "userservice",
+    libraryDependencies ++= commonDependencies,
+
+    version in Docker := "latest",
+    dockerExposedPorts in Docker := Seq(1603),
+    dockerRepository := Some("suu_project_repository"),
+    dockerBaseImage := "java",
+
+    // run as root 
+    daemonUserUid in Docker := Option("0"),
+    daemonUser in Docker    := "daemon",
   )

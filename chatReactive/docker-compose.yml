@@ -1,25 +1,50 @@
 version: '3'
 services:
-  seed:
-    image: suu_project_repository/microservice_1:latest
+  gateway:
+    image: suu_project_repository/gateway:latest
     ports:
       - '1600:1600'
       - 8080:8080
     environment:
       CLUSTER_PORT: 1600
-      CLUSTER_IP: seed
-      SEED_PORT_1600_TCP_ADDR: seed
+      CLUSTER_IP: gateway
+      SEED_PORT_1600_TCP_ADDR: gateway
+      USER_SERVICE_IP: userservice
+      MESSAGE_ROOM_SERVICE_IP: messageroomservice
+      GATEWAY_IP: gateway
       JAEGER_HOST: jaeger
 
-  c1:
-    image: suu_project_repository/microservice_2:latest
+  userservice:
+    image: suu_project_repository/userservice:latest
     ports:
       - '1601:1601'
     environment:
       CLUSTER_PORT: 1601
-      CLUSTER_IP: c1
-      SEED_PORT_1600_TCP_ADDR: seed
+      CLUSTER_IP: userservice
+      SEED_PORT_1600_TCP_ADDR: gateway
+      USER_SERVICE_IP: userservice
+      GATEWAY_IP: gateway
       JAEGER_HOST: jaeger
+    
+  messageroomservice:
+    image: suu_project_repository/messageroom:latest
+    ports:
+      - '1602:1602'
+    environment:
+      CLUSTER_PORT: 1602
+      CLUSTER_IP: userservice
+      SEED_PORT_1600_TCP_ADDR: gateway
+      MESSAGE_REGISTRY_SERVICE_IP: messageregistryservice
+      USER_SERVICE_IP: userservice
+      GATEWAY_IP: gateway
+      JAEGER_HOST: jaeger
+
+  messageregistryservice:
+    image: suu_project_repository/messageregistry:latest
+    ports:
+      - '1603:1603'
+    environment:
+      CLUSTER_PORT: 1603
 
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest

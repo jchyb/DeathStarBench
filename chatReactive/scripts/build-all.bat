@@ -1,4 +1,6 @@
 @REM SBT launcher script
-call .\sbt.bat microservice_1/docker:publishLocal
-call .\sbt.bat microservice_2/docker:publishLocal
-docker-compose up
+call .\sbt.bat gateway/docker:publishLocal
+call .\sbt.bat userservice/docker:publishLocal
+call .\sbt.bat messageroom/docker:publishLocal
+call .\sbt.bat messageregistry/docker:publishLocal
+@REM docker-compose up
