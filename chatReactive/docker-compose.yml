@@ -3,12 +3,12 @@ services:
   gateway:
     image: suu_project_repository/gateway:latest
     ports:
-      - '1600:1600'
+      # - '1600:1600'
       - 8080:8080
     environment:
-      CLUSTER_PORT: 1600
-      CLUSTER_IP: gateway
-      SEED_PORT_1600_TCP_ADDR: gateway
+      # CLUSTER_PORT: 1600
+      # CLUSTER_IP: gateway
+      # SEED_PORT_1600_TCP_ADDR: gateway
       USER_SERVICE_IP: userservice
       MESSAGE_ROOM_SERVICE_IP: messageroomservice
       GATEWAY_IP: gateway
@@ -19,11 +19,10 @@ services:
     ports:
       - '1601:1601'
     environment:
-      CLUSTER_PORT: 1601
-      CLUSTER_IP: userservice
-      SEED_PORT_1600_TCP_ADDR: gateway
-      USER_SERVICE_IP: userservice
-      GATEWAY_IP: gateway
+      # CLUSTER_PORT: 1601
+      # CLUSTER_IP: userservice
+      # SEED_PORT_1600_TCP_ADDR: gateway
+      # GATEWAY_IP: gateway
       JAEGER_HOST: jaeger
     
   messageroomservice:
@@ -31,12 +30,12 @@ services:
     ports:
       - '1602:1602'
     environment:
-      CLUSTER_PORT: 1602
-      CLUSTER_IP: userservice
-      SEED_PORT_1600_TCP_ADDR: gateway
+      # CLUSTER_PORT: 1602
+      # CLUSTER_IP: userservice
+      # SEED_PORT_1600_TCP_ADDR: gateway
       MESSAGE_REGISTRY_SERVICE_IP: messageregistryservice
       USER_SERVICE_IP: userservice
-      GATEWAY_IP: gateway
+      # GATEWAY_IP: gateway
       JAEGER_HOST: jaeger
 
   messageregistryservice:

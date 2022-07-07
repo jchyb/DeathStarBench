@@ -10,7 +10,7 @@ object GatewayApp {
   object RootBehavior {
     def apply(): Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
       val httpServer = context.spawn[Nothing](HttpServerWithActorInteraction(), "HttpServer")
-
+      
       Behaviors.empty
     }
   }

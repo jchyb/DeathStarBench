@@ -11,7 +11,7 @@ import akka.http.scaladsl.Http
 
 object UserServiceApp {
 
-  val usernames = Map[Int, String]()
+  val usernames = Map[Int, String]() // userId => username
 
   object RootBehavior {
     def apply(): Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
@@ -30,15 +30,18 @@ object UserServiceApp {
               }
             )
           },
-          path("all_usernames") {
+          path("get_username") {
             get {
-              println("Called get usernames.")
-              complete(usernames.toList.toString())
+              parameters("user_id") { (userId) =>
+                println(s"Get username of ${userId}.")
+                val username: String = usernames.get(userId.toInt).getOrElse("unknown")
+                complete(username)
+              }
             }
           }
         )
 
-    val bindingFuture = Http().newServerAt("0.0.0.0", 8080).bind(route)
+      Http().newServerAt("0.0.0.0", 8080).bind(route)
       Behaviors.empty
     }
   }

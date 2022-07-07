@@ -10,18 +10,52 @@ import scala.collection.mutable.Map
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
+import akka.stream.scaladsl.Flow
+import scala.concurrent.Future
+import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import spray.json.DefaultJsonProtocol._
+import akka.http.scaladsl.common.EntityStreamingSupport
+import akka.http.scaladsl.common.JsonEntityStreamingSupport
+import akka.util.ByteString
+import akka.http.scaladsl.marshalling.Marshaller
+import akka.http.scaladsl.model.ContentTypes
+import akka.http.scaladsl.marshalling.Marshalling
 
 object MessageRoomApp {
 
+  case class Message(uid: Int, message: String)
+  implicit val messageFormat = jsonFormat2(Message)
   val roomIdByUser = Map[Int, Int]() // userId => roomId 
+  implicit val jsonStreamingSupport: JsonEntityStreamingSupport =
+    EntityStreamingSupport.json()
+    .withFramingRenderer(Flow[ByteString].map(bs => bs ++ ByteString("\n")))
+
+  // object MessageJsonProtocol
+  //   extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+  //   with spray.json.DefaultJsonProtocol {
+
+  //   implicit val messageFormat = jsonFormat2(Message.apply)
+  // }
 
   object RootBehavior {
+  
     def apply(): Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
       val config = ConfigFactory.load()
       implicit val system = context.system
+      implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
       val http = Http()
       val messageRegistryServiceIp = config.getString("microservices.messageregistry-service-ip")
+      val userServiceIp = config.getString("microservices.user-service-ip")
       println(s"DEBUG: messageRegistryServiceIp: $messageRegistryServiceIp")
+
+      implicit val stringFormat = Marshaller[String, ByteString] { ec => s =>
+          Future.successful {
+            List(Marshalling.WithFixedContentType(ContentTypes.`application/json`, () =>
+              ByteString("\"" + s + "\"")) // String in a JSON format
+            )
+          }
+        }
 
       val route =
         concat(
@@ -29,7 +63,8 @@ object MessageRoomApp {
             put {
               parameters("user_id", "room_id") { (userId, roomId) =>
                 println(s"Set room for user: $userId as room: $roomId")
-                //spawn actor making the request, wait for it and return
+                // In a real system we would probably write to the database,
+                // or use a cluster for in-app caching
                 roomIdByUser(userId.toInt) = roomId.toInt
                 complete("done")
               }
@@ -55,13 +90,29 @@ object MessageRoomApp {
                 val response = http.singleRequest(
                   HttpRequest(uri = s"http://${messageRegistryServiceIp}:8080/get_messages?room_id=$roomId", method = HttpMethods.GET)
                 )
-                complete(response)
+                // Reactive stream implementation - client side
+                val src = response.map { 
+                  _.entity.dataBytes
+                    .via(jsonStreamingSupport.framingDecoder)
+                    .mapAsync(1)(bytes => Unmarshal(bytes).to[Message].map { message =>
+                        // Query and inclusion of username
+                        http.singleRequest(
+                          HttpRequest(uri = s"http://${userServiceIp}:8080/get_username?user_id=$userId", method = HttpMethods.GET)
+                        ).map { usernameResponse =>
+                          Unmarshal(usernameResponse.entity).to[String].map { username =>
+                            println("username:" + username)
+                            s"${username}: ${message.message}"
+                          }
+                        }.flatten
+                    }.flatten)
+                }
+                complete(src)
               }
             }
           },
         )
 
-    val bindingFuture = http.newServerAt("0.0.0.0", 8080).bind(route)
+      http.newServerAt("0.0.0.0", 8080).bind(route)
       Behaviors.empty
     }
   }
