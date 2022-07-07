@@ -1,9 +1,15 @@
 """
 Use the following command to run:
 
+To run with GUI:
 ```
 locust -f user_traffic.py
 ```
+To run from the command line:
+```
+locust --headless --users 10 --spawn-rate 1 -H http://localhost:8080 --run-time 5m
+```
+
 """
 
 from locust import HttpUser, between, task
