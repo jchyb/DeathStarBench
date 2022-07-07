@@ -12,14 +12,12 @@ import akka.actor.typed.Behavior
 import com.typesafe.config.ConfigFactory
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
-import scala.concurrent.ExecutionContext
 
 object HttpServerWithActorInteraction {
 
   def apply(): Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
     val config = ConfigFactory.load()
     implicit val system = context.system
-    implicit val executionContext: ExecutionContext = context.executionContext
     val userServiceIp = config.getString("microservices.user-service-ip")
     val messageRoomServiceIp = config.getString("microservices.messageroom-service-ip")
     println(s"DEBUG: userservice ip: $userServiceIp")

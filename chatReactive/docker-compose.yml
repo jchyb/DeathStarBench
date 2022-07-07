@@ -3,12 +3,8 @@ services:
   gateway:
     image: suu_project_repository/gateway:latest
     ports:
-      # - '1600:1600'
       - 8080:8080
     environment:
-      # CLUSTER_PORT: 1600
-      # CLUSTER_IP: gateway
-      # SEED_PORT_1600_TCP_ADDR: gateway
       USER_SERVICE_IP: userservice
       MESSAGE_ROOM_SERVICE_IP: messageroomservice
       GATEWAY_IP: gateway
@@ -16,44 +12,29 @@ services:
 
   userservice:
     image: suu_project_repository/userservice:latest
-    ports:
-      - '1601:1601'
     environment:
-      # CLUSTER_PORT: 1601
-      # CLUSTER_IP: userservice
-      # SEED_PORT_1600_TCP_ADDR: gateway
-      # GATEWAY_IP: gateway
       JAEGER_HOST: jaeger
     
   messageroomservice:
     image: suu_project_repository/messageroom:latest
-    ports:
-      - '1602:1602'
     environment:
-      # CLUSTER_PORT: 1602
-      # CLUSTER_IP: userservice
-      # SEED_PORT_1600_TCP_ADDR: gateway
       MESSAGE_REGISTRY_SERVICE_IP: messageregistryservice
       USER_SERVICE_IP: userservice
-      # GATEWAY_IP: gateway
       JAEGER_HOST: jaeger
 
   messageregistryservice:
     image: suu_project_repository/messageregistry:latest
-    ports:
-      - '1603:1603'
     environment:
-      CLUSTER_PORT: 1603
+      JAEGER_HOST: jaeger
 
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
     hostname: jaeger
     ports:
-      - 5775:5775/udp
-      - 6831:6831/udp
-      - 6832:6832/udp
-      - 5778:5778
+      # - 5775:5775/udp
+      # - 6831:6831/udp
+      # - 6832:6832/udp
+      # - 5778:5778
       - 16686:16686
-      # - 14268:14268 do not set
-      - 9411:9411
-      - 55681:55681
+      # - 9411:9411
+      # - 55681:55681

@@ -2,6 +2,7 @@
 
 set -e
 
-./sbt microservice_1/docker:publishLocal
-./sbt microservice_2/docker:publishLocal
-#docker-compose up
+./sbt gateway/docker:publishLocal
+./sbt userservice/docker:publishLocal
+./sbt messageroom/docker:publishLocal
+./sbt messageregistry/docker:publishLocal

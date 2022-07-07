@@ -1,4 +1,4 @@
-// example curl calls 
+Example curl calls 
 curl -X PUT "localhost:8080/set_username?user_id=1&username=A"
 curl -X PUT "localhost:8080/set_room?user_id=1&room_id=3"
 curl -X PUT "localhost:8080/send_message?user_id=1&message=example"

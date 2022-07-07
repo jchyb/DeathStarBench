@@ -31,13 +31,6 @@ object MessageRoomApp {
     EntityStreamingSupport.json()
     .withFramingRenderer(Flow[ByteString].map(bs => bs ++ ByteString("\n")))
 
-  // object MessageJsonProtocol
-  //   extends akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-  //   with spray.json.DefaultJsonProtocol {
-
-  //   implicit val messageFormat = jsonFormat2(Message.apply)
-  // }
-
   object RootBehavior {
   
     def apply(): Behavior[Nothing] = Behaviors.setup[Nothing] { context =>
@@ -103,8 +96,8 @@ object MessageRoomApp {
                             println("username:" + username)
                             s"${username}: ${message.message}"
                           }
-                        }.flatten
-                    }.flatten)
+                        }
+                    })
                 }
                 complete(src)
               }

@@ -46,14 +46,14 @@ object MessageRegistryApp {
                   .getOrElse(List(Message(userId.toInt, message)))
                 println(roomMessages)
                 messagesByRoom(roomId.toInt) = roomMessages
-                complete("ok")
+                complete("done")
               }
             }
           },
           path("get_messages") {
             get {
               parameters("room_id") { (roomId) =>
-                val roomMessages = messagesByRoom(roomId.toInt)
+                val roomMessages = messagesByRoom.get(roomId.toInt).getOrElse(List(Message(0, "dummy message")))
                 println(s"Getting messages from $roomId.")
                 val source = Source(roomMessages) // Reactive stream implementation - server side
                 complete(source)
