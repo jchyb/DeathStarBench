@@ -3,3 +3,5 @@ curl -X PUT "localhost:8080/set_username?user_id=1&username=A"
 curl -X PUT "localhost:8080/set_room?user_id=1&room_id=3"
 curl -X PUT "localhost:8080/send_message?user_id=1&message=example"
 curl -X GET "localhost:8080/get_messages?user_id=1
+
+curl -X GET "localhost:16686/api/traces?service=GatewayService

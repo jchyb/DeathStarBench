@@ -2,7 +2,4 @@
 
 set -e
 
-./sbt gateway/docker:publishLocal
-./sbt messageregistry/docker:publishLocal
-./sbt messageroom/docker:publishLocal
-./sbt userservice/docker:publishLocal
+./sbt gateway/docker:publishLocal;userservice/docker:publishLocal;messageroom/docker:publishLocal;messageregistry/docker:publishLocal

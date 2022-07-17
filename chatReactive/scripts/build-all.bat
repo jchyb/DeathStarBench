@@ -1,5 +1,2 @@
 @REM SBT runner script
-call .\sbt.bat gateway/docker:publishLocal
-call .\sbt.bat userservice/docker:publishLocal
-call .\sbt.bat messageroom/docker:publishLocal
-call .\sbt.bat messageregistry/docker:publishLocal
+call .\sbt.bat gateway/docker:publishLocal;userservice/docker:publishLocal;messageroom/docker:publishLocal;messageregistry/docker:publishLocal

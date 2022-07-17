@@ -1,0 +1,40 @@
+version: '3'
+services:
+  gatewayNR:
+    image: suu_nonreactive/gatewaynr:latest
+    ports:
+      - 8080:8080
+    environment:
+      USER_SERVICE_IP: userserviceNR
+      MESSAGE_ROOM_SERVICE_IP: messageroomserviceNR
+      GATEWAY_IP: gatewayNR
+      JAEGER_HOST: jaeger
+
+  userserviceNR:
+    image: suu_nonreactive/userservicenr:latest
+    environment:
+      JAEGER_HOST: jaeger
+    
+  messageroomserviceNR:
+    image: suu_nonreactive/messageroomnr:latest
+    environment:
+      MESSAGE_REGISTRY_SERVICE_IP: messageregistryserviceNR
+      USER_SERVICE_IP: userserviceNR
+      JAEGER_HOST: jaeger
+
+  messageregistryserviceNR:
+    image: suu_nonreactive/messageregistrynr:latest
+    environment:
+      JAEGER_HOST: jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.36.0
+    hostname: jaeger
+    ports:
+      # - 5775:5775/udp
+      # - 6831:6831/udp
+      # - 6832:6832/udp
+      # - 5778:5778
+      - 16686:16686
+      # - 9411:9411
+      # - 55681:55681
