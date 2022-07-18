@@ -26,8 +26,9 @@ object UserServiceApp extends IOApp {
         usernames(userId) = username
         println(s"Setting user $userId username to $username")
         Ok("done")
-      case PUT -> Root / "get_username" :? UserIdQueryParamMatcher(userId)=>
-        Ok(usernames(userId))
+      case GET -> Root / "get_username" :? UserIdQueryParamMatcher(userId) =>
+        println(s"Get username of ${userId}.")
+        Ok(usernames.get(userId).getOrElse("unknown"))
     }
 
     val httpApp = Router("/" -> server.KamonSupport(service, "", 0)).orNotFound

@@ -35,19 +35,13 @@ object GatewayApp extends IOApp {
 
     val service = HttpRoutes.of[IO] {
       case PUT -> Root / "set_username" :? UserIdQueryParamMatcher(userId) +& UsernameQueryParamMatcher(username) =>
-        println(userId)
-        println(username)
+        println(s"Called 'set_username' with $userId and $username")
         Ok(httpClient.expect[String](Request[IO](Method.PUT, Uri.unsafeFromString(s"http://${userServiceIp}:8080/set_username?user_id=${userId}&username=$username"))))
       case PUT -> Root / "set_room" :? UserIdQueryParamMatcher(userId) +& RoomIdQueryParamMatcher(roomId) =>
-        println(userId)
-        println(roomId)
         Ok(httpClient.expect[String](Request[IO](Method.PUT, Uri.unsafeFromString(s"http://${messageRoomServiceIp}:8080/set_room?user_id=$userId&room_id=$roomId"))))
       case PUT -> Root / "send_message" :? UserIdQueryParamMatcher(userId) +& MessageQueryParamMatcher(message) =>
-        println(userId)
-        println(message)
         Ok(httpClient.fetchAs[String](Request[IO](Method.PUT, Uri.unsafeFromString(s"http://${messageRoomServiceIp}:8080/send_message?user_id=$userId&message=$message"))))
       case GET -> Root / "get_messages" :? UserIdQueryParamMatcher(userId) =>
-        println(userId)
         Ok(httpClient.expect[String](s"http://${messageRoomServiceIp}:8080/get_messages?user_id=$userId"))
       case GET -> Root / "hello" =>
         Ok("hello back")

@@ -44,21 +44,22 @@ object MessageRoomApp extends IOApp {
       case PUT -> Root / "set_room" :? UserIdQueryParamMatcher(userId) +& RoomIdQueryParamMatcher(roomId) =>
         println(userId)
         println(roomId)
-        roomIdByUser(userId.toInt) = roomId.toInt
+        roomIdByUser(userId) = roomId
         Ok("done")
       case PUT -> Root / "send_message" :? UserIdQueryParamMatcher(userId) +& MessageQueryParamMatcher(message) =>
-        val roomId = roomIdByUser(userId)
+        val roomId = roomIdByUser.get(userId).getOrElse(0)
         println(s"Sending $message of user $userId to room $roomId")
         Ok(httpClient.expect[String](Request[IO](Method.PUT, Uri.unsafeFromString(s"http://${messageRegistryServiceIp}:8080/send_message?room_id=$roomId&user_id=$userId&message=$message"))))
       case GET -> Root / "get_messages" :? UserIdQueryParamMatcher(userId) =>
-        println(s"Getting messages for $userId")
-        val roomId = roomIdByUser(userId)
+        val roomId = roomIdByUser.get(userId).getOrElse(0)
+        println(s"Getting messages for $userId by from $roomId.")
         val str = httpClient.expect[String](s"http://${messageRegistryServiceIp}:8080/get_messages?room_id=$roomId")
         val formattedStr = str.unsafeRunSync().split("\n").map { msg =>
-          println(msg)
           val arr = msg.split(':')
           val (userId, msgStr) = (arr.head, arr.tail)
-          s"user:${msgStr.mkString("")}"
+          val username = httpClient.expect[String](s"http://${userServiceIp}:8080/get_username?user_id=$userId").unsafeRunSync()
+          println("username:" + username)
+          s"$username:${msgStr.mkString("")}"
         }.mkString("\n")
         Ok(formattedStr)
     }

@@ -27,7 +27,7 @@ object MessageRegistryApp extends IOApp {
 
     val service = HttpRoutes.of[IO] {
       case PUT -> Root / "send_message" :? UserIdQueryParamMatcher(userId) +& RoomIdQueryParamMatcher(roomId) +& MessageQueryParamMatcher(message) =>
-        println(s"Add message $message by $userId to $roomId.")
+        println(s"Set message $message by $userId to $roomId.")
         val roomMessages =
           messagesByRoom.get(roomId.toInt).map(Message(userId.toInt, message) :: _)
           .getOrElse(List(Message(userId.toInt, message)))

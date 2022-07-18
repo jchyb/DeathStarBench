@@ -19,7 +19,7 @@ class User(HttpUser):
     wait_time = between(5, 15)
 
     def on_start(self):
-        self.user_id = random.randrange(1, 10_000)
+        self.user_id = random.randrange(1, 1000)
 
         username = f"user{self.user_id}"
 
