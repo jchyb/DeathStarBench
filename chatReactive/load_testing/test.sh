@@ -10,6 +10,6 @@ if [ ${active_dir} != ${target_dir} ] ; then
     exit 1
 fi
 
-locust_options="-f /mnt/load_testing/user_traffic.py --headless --users 10 --spawn-rate 1 -H http://localhost:8080 --run-time 30s"
+locust_options="-f /mnt/load_testing/user_traffic.py --headless --users 20 --spawn-rate 5 -H http://localhost:8080 --run-time 2m"
 
 docker run --rm --network=host -v `pwd`/load_testing/.:/mnt/load_testing locustio/locust ${locust_options} 
