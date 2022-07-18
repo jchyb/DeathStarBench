@@ -28,7 +28,7 @@ services:
       JAEGER_HOST: jaeger
 
   jaeger:
-    image: jaegertracing/all-in-one:1.36
+    image: jaegertracing/all-in-one:1.36.0
     hostname: jaeger
     ports:
       # - 5775:5775/udp
